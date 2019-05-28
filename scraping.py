@@ -9,7 +9,11 @@ options = Options()
 browser = webdriver.Chrome(
     '/usr/local/Caskroom/chromedriver/75.0.3770.8/chromedriver')
 
-# data frame
+# データフレーム
+columns = ['name', 'classification']
+df = pd.DataFrame(columns=columns)
+
+# 鳥貴族メニューURL
 url = "https://www.torikizoku.co.jp/menu/"
 
 # メニューリスト
@@ -34,6 +38,9 @@ def scraping(menu_link_list, menu_name):
             item_list = browser.find_elements_by_css_selector('li h5')
 
             for item in item_list:
+                se = pd.Series([item.text, menu_name], columns)
+                global df
+                df = df.append(se, columns)  # データフレームに行を追加
                 print(item.text)
 
             print('\n')
@@ -48,3 +55,6 @@ for menu_name in MENU_NAME_LIST:
     scraping(menu_link_list, menu_name)
 
 browser.close()
+
+df.to_csv('./result.csv')
+print('DONE...')
